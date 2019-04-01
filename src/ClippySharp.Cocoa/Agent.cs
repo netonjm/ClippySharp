@@ -84,6 +84,11 @@ namespace ClippySharp
 			Play ("Show");
 		}
 
+		public string[] GetAnimations ()
+		{
+			return Animator.Animations.Select (s => s.Name).ToArray ();
+		}
+
 		public bool Animate ()
 		{
 			if (Hidden) {

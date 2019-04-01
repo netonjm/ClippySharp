@@ -42,10 +42,10 @@ namespace ClippyTest
 
             agent.Animate();
 
-            foreach (var animation in agent.Animator.Animations)
+            foreach (var animation in agent.GetAnimations ())
             {
                 //fill with all animation
-                popUpButton.AddItem(animation.Name);
+                popUpButton.AddItem(animation);
             }
 
             popUpButton.Activated += (sender, e) =>
