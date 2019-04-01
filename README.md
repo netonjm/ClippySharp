@@ -1,7 +1,7 @@
 # ClippySharp
 Add Clippy to any xam.mac application for instant nostalgia.
 
-<img src="https://raw.githubusercontent.com/netonjm/ClippySharp/master/images/clippysharp.png" width="300">
+<img src="https://raw.githubusercontent.com/netonjm/ClippySharp/master/images/clippysharp.gif" width="300">
 
 Usage: Setup
 ------------
