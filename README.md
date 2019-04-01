@@ -1,7 +1,10 @@
 # ClippySharp
-Add Clippy to any xam.mac application for instant nostalgia.
+
+Add Clippy to any Xamarin.Mac (in the future it will support other UI toolkits) application for instant nostalgia.
 
 <img src="https://raw.githubusercontent.com/netonjm/ClippySharp/master/images/clippysharp.gif" width="300">
+
+
 
 Usage: Setup
 ------------
@@ -46,7 +49,7 @@ agent.Stop();
 
 Special Thanks
 --------------
+* ClippySharp it's a port of [clippy.js](https://github.com/smore-inc/clippy.js) for C#. Thanks to Smore Inc and all the team for creating this awesome assistant. 
 * The awesome [Cinnamon Software](http://www.cinnamonsoftware.com/) for developing [Double Agent](http://doubleagent.sourceforge.net/)
-the program we used to unpack Clippy and his friends!
-* Smore Inc, for creating [clippy.js](https://github.com/smore-inc/clippy.js) :)
+the program used to unpack Clippy and his friends!
 * Microsoft, for creating clippy :)
