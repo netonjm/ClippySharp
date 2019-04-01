@@ -159,27 +159,32 @@ namespace ClippySharp
 
         private void _step()
         {
-            if (this.currentAnimation == null) return;
+			//this is under a timer an needs
 
-            var newFrameIndex = (int)Math.Min(this.GetNextAnimationFrame(), this.currentAnimation.Frames.Count - 1);
-            var frameChanged = this.currentFrame != null && this.currentFrameIndex != newFrameIndex;
+			AgentAnimation animation = this.currentAnimation;
+			var frame = this.currentFrame;
+
+			if (animation == null) return;
+
+            var newFrameIndex = Math.Min(this.GetNextAnimationFrame(), animation.Frames.Count - 1);
+            var frameChanged = frame != null && this.currentFrameIndex != newFrameIndex;
             this.currentFrameIndex = newFrameIndex;
 
             // always switch frame data, unless we're at the last frame of an animation with a useExitBranching flag.
-            if (!(this.IsAtLastFrame() && this.currentAnimation.useExitBranching))
+            if (!(this.IsAtLastFrame() && animation.useExitBranching))
             {
-                currentFrame = this.currentAnimation.Frames[this.currentFrameIndex];
+				currentFrame = frame = animation.Frames[this.currentFrameIndex];
             }
 
             NeedsRefresh?.Invoke(this, EventArgs.Empty);
             this.PlaySound();
 
-            aTimer.Interval = currentFrame.Duration;
+            aTimer.Interval = frame.Duration;
             aTimer.Start();
 
             if (frameChanged && this.IsAtLastFrame())
             {
-                if (this.currentAnimation.useExitBranching && !this._exiting)
+                if (animation.useExitBranching && !this._exiting)
                 {
                     AnimationEnded?.Invoke(this, new AnimationStateEventArgs ( currentAnimationName, AnimationStates.Waiting));
                 }
