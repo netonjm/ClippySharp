@@ -11,18 +11,19 @@ namespace ClippySharp
 {
     public class AgentAnimator
     {
+        public event EventHandler<AnimationStateEventArgs> AnimationEnded;
         public event EventHandler NeedsRefresh;
 
         readonly NSImage imageSheet;
-        private AgentAnimation _currentAnimation;
+        private AgentAnimation currentAnimation;
 
-        //private string path;
-        //private AgentData[] data;
-        //private AgentSounds[] sounds;
+        bool _started;
+        AgentAnimationFrame currentFrame;
         internal string currentAnimationName;
-        //internal string[] animations;
         public List<SoundData> Sounds { get; }
         public List<AgentAnimation> Animations { get; }
+
+        System.Timers.Timer aTimer;
 
         readonly Agent agent;
 
@@ -53,12 +54,11 @@ namespace ClippySharp
 
             aTimer = new System.Timers.Timer();
             aTimer.Elapsed += ATimer_Elapsed;
-          
         }
 
         internal NSImage GetCurrentImage()
         {
-           return CurrentFrame?.GetImage();
+           return currentFrame?.GetImage();
         }
 
         void ATimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
@@ -67,11 +67,9 @@ namespace ClippySharp
             _step();
         }
 
-        System.Timers.Timer aTimer;
-
         public NSImage GetImage(int x, int y)
         {
-            var currentY = imageSheet.CGImage.Height - (agent.ImageSize.Height + y);
+            var currentY = y;// imageSheet.CGImage.Height - agent.ImageSize.Height - y;
             var image = imageSheet.CGImage.WithImageInRect(new CGRect(x, currentY, agent.ImageSize.Width, agent.ImageSize.Height));
             return new NSImage(image, new CGSize(agent.ImageSize.Width, agent.ImageSize.Height));
         }
@@ -82,19 +80,18 @@ namespace ClippySharp
         }
 
         bool _exiting;
-        private int _currentFrameIndex;
+        private int currentFrameIndex;
 
         internal void ExitAnimation()
         {
             _exiting = true;
         }
 
-
         #region Queue and Idle handling
 
         public bool IsIdleAnimation()
         {
-            return _currentAnimation?.IsIdle() ?? false;
+            return currentAnimation?.IsIdle() ?? false;
         }
 
         static readonly Random rnd = new Random(DateTime.Now.Millisecond);
@@ -133,7 +130,6 @@ namespace ClippySharp
 
         #endregion
 
-
         public bool ShowAnimation (string animationName)
         {
             this._exiting = false;
@@ -142,119 +138,112 @@ namespace ClippySharp
                 return false;
             }
 
-            this._currentAnimation = Animations.FirstOrDefault(s => s.Name == animationName);
+            this.currentAnimation = Animations.FirstOrDefault(s => s.Name == animationName);
             this.currentAnimationName = animationName;
 
+            if (!this._started)
+            {
+                this._step();   
+                this._started = true;
+            }
 
-             
-            //if (!this._started)
-            //{
-                this._step();
-               //this._started = true;
-            //}
-
-            this._currentFrameIndex = -1;
+            this.currentFrame = null;
+            this.currentFrameIndex = 0;
             return true;
         }
 
-
-        bool _atLastFrame ()
+        bool IsAtLastFrame ()
         {
-            return this._currentFrameIndex >= this._currentAnimation.Frames.Count - 1;
+            return this.currentFrameIndex >= this.currentAnimation.Frames.Count - 1;
         }
 
         private void _step()
         {
-            if (this._currentAnimation == null) return;
+            if (this.currentAnimation == null) return;
 
-            var newFrameIndex = (int)Math.Min(this._getNextAnimationFrame(), this._currentAnimation.Frames.Count - 1);
-            var frameChanged = this.CurrentFrame != null || this._currentFrameIndex != newFrameIndex;
-            this._currentFrameIndex = newFrameIndex;
+            var newFrameIndex = (int)Math.Min(this.GetNextAnimationFrame(), this.currentAnimation.Frames.Count - 1);
+            var frameChanged = this.currentFrame != null && this.currentFrameIndex != newFrameIndex;
+            this.currentFrameIndex = newFrameIndex;
+
+            // always switch frame data, unless we're at the last frame of an animation with a useExitBranching flag.
+            if (!(this.IsAtLastFrame() && this.currentAnimation.useExitBranching))
+            {
+                currentFrame = this.currentAnimation.Frames[this.currentFrameIndex];
+            }
 
             NeedsRefresh?.Invoke(this, EventArgs.Empty);
             this.PlaySound();
 
-            if (frameChanged && this._atLastFrame())
+            aTimer.Interval = currentFrame.Duration;
+            aTimer.Start();
+
+            if (frameChanged && this.IsAtLastFrame())
             {
-                if (this._currentAnimation.useExitBranching && !this._exiting)
+                if (this.currentAnimation.useExitBranching && !this._exiting)
                 {
                     AnimationEnded?.Invoke(this, new AnimationStateEventArgs ( currentAnimationName, AnimationStates.Waiting));
                 }
                 else
                 {
                     AnimationEnded?.Invoke(this, new AnimationStateEventArgs(currentAnimationName, AnimationStates.Exited));
-
                 }
-                return;
             }
 
-            aTimer.Interval = CurrentFrame.Duration;
-            aTimer.Start();
-        }
-
-        public event EventHandler<AnimationStateEventArgs> AnimationEnded;
-
-        AgentAnimationFrame CurrentFrame
-        {
-            get
-            {
-                if (_currentAnimation == null || _currentFrameIndex < 0 || _currentFrameIndex >= _currentAnimation.Frames.Count)
-                {
-                    return null;
-                }
-                return _currentAnimation.Frames[this._currentFrameIndex];
-            }
         }
 
         public void PlaySound ()
         {
-            var currentFrame = CurrentFrame;
-            if (currentFrame != null && string.IsNullOrEmpty (currentFrame.Sound))
+            var sound = currentFrame?.Sound;
+            if (string.IsNullOrEmpty (sound))
             {
                 return;
             }
-            Sounds.FirstOrDefault(s => s.Id == currentFrame.Sound)?.Play ();
+            Sounds.FirstOrDefault(s => s.Id == sound)?.Play ();
         }
 
-        int _getNextAnimationFrame ()
+        int GetNextAnimationFrame ()
         {
-            if (this.CurrentFrame == null) 
+            if (currentFrame == null) 
                 return 0;
-            if (_currentFrameIndex >= _currentAnimation.Frames.Count)
+            if (currentFrameIndex >= currentAnimation.Frames.Count)
                 return 0;
-            //if (this._exiting && currentFrame.exitBranch !== undefined) 
-            //{
-            //    return currentFrame.exitBranch;
-            //}
-            //else if (branching)
-            //{
-            //    var rnd = Math.random() * 100;
-            //    for (var i = 0; i < branching.branches.length; i++)
-            //    {
-            //        var branch = branching.branches[i];
-            //        if (rnd <= branch.weight)
-            //        {
-            //            return branch.frameIndex;
-            //        }
 
-            //        rnd -= branch.weight;
-            //    }
-            //}
+            var branching = currentFrame.Branching;
 
-            return this._currentFrameIndex + 1;
+            if (this._exiting && currentFrame.ExitBranch != null) 
+            {
+                return int.Parse (currentFrame.ExitBranch);
+            }
+            else if (branching != null)
+            {
+                var random = GetRandom () * 100;
+                var branches = branching["branches"];
+
+                for (var i = 0; i < branches.Count (); i++)
+                {
+                    var branch = branches[i];
+                    if (random <= branch.Weight)
+                    {
+                        return branch.FrameIndex;
+                    }
+
+                    random -= branch.Weight;
+                }
+            }
+
+            return this.currentFrameIndex + 1;
         }
 
         internal void Pause()
         {
-           
+            aTimer.Stop();
         }
 
         internal void Resume()
         {
-            this._step();
+            aTimer.Start();
         }
 
-        bool _started;
     }
 
     public class AnimationStateEventArgs : EventArgs

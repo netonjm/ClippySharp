@@ -13,7 +13,6 @@ namespace ClippyTest
             this.agent = agent;
 
             agent.NeedsRender += Agent_NeedsRender;
-
             agent.RefreshImage();
         }
 

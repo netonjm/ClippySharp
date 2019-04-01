@@ -1,4 +1,5 @@
-﻿using AppKit;
+﻿using System.Collections.Generic;
+using AppKit;
 using ClippySharp.Models;
 
 namespace ClippySharp
@@ -7,6 +8,10 @@ namespace ClippySharp
     {
         readonly AgentAnimator animator;
         readonly AgentFrameModel model;
+
+        public string ExitBranch => model.ExitBranch;
+
+        public Dictionary<string, AgentFrameBranchModel[]> Branching => model.Branching;
 
         public int Duration => model.Duration;
         public string Sound => model.Sound;

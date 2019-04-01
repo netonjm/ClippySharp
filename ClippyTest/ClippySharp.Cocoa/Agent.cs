@@ -76,17 +76,9 @@ namespace ClippySharp
             queue.Enqueue(p);
         }
 
-        public bool Play (string animation, int timeout = 0, Action cb = null)
+        public bool Play (string animation, int timeout = 5000)
         {
-            //var selected = Animations.FirstOrDefault(s => s.Name == animation);
-            //if (selected == null)
-            //{
-            //    return;
-            //}
-          
-
             if (!Animator.HasAnimation(animation)) return false;
-            if (timeout == 0) timeout = 5000;
 
             //addt
             AddToQueue(() =>
@@ -98,7 +90,6 @@ namespace ClippySharp
                     if (e.State == AnimationStates.Exited)
                     {
                         completed = true;
-                        cb?.Invoke();
                     }
                 };
 
@@ -147,9 +138,23 @@ namespace ClippySharp
         public void Stop()
         {
             this.queue.Clear();
-            //this.animator.exitAnimation();
-            //this.balloon.Hide();
+
+            Animator.ExitAnimation();
             HideBalloon?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void Show (bool fast)
+        {
+            Hidden = false;
+            if (fast)
+            {
+                Resume();
+                Animator.OnQueueEmpty();
+                return;
+            }
+
+            Resume();
+            Play("Show");
         }
 
         public bool Animate()
