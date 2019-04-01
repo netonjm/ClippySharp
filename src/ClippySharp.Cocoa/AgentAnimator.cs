@@ -9,23 +9,29 @@ using CoreGraphics;
 
 namespace ClippySharp
 {
-    public class AgentAnimator
+    internal class AgentAnimator
     {
-        public event EventHandler<AnimationStateEventArgs> AnimationEnded;
+		static readonly Random rnd = new Random (DateTime.Now.Millisecond);
+		float GetRandom () => rnd.Next (0, 1);
+
+		public event EventHandler<AnimationStateEventArgs> AnimationEnded;
         public event EventHandler NeedsRefresh;
 
-        readonly NSImage imageSheet;
-        private AgentAnimation currentAnimation;
+		public List<SoundData> Sounds { get; }
+		public List<AgentAnimation> Animations { get; }
 
-        bool _started;
-        AgentAnimationFrame currentFrame;
-        internal string currentAnimationName;
-        public List<SoundData> Sounds { get; }
-        public List<AgentAnimation> Animations { get; }
+		internal string currentAnimationName;
 
-        System.Timers.Timer aTimer;
+		readonly NSImage imageSheet;
+		readonly System.Timers.Timer aTimer;
+		readonly Agent agent;
 
-        readonly Agent agent;
+		bool _exiting;
+		bool _started;
+		int currentFrameIndex;
+
+		AgentAnimation currentAnimation;
+		AgentAnimationFrame currentFrame;
 
         public AgentAnimator(string name, Agent agent)
         {
@@ -56,108 +62,96 @@ namespace ClippySharp
             aTimer.Elapsed += ATimer_Elapsed;
         }
 
-        internal NSImage GetCurrentImage()
-        {
-           return currentFrame?.GetImage();
-        }
-
         void ATimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             aTimer.Stop();
-            _step();
+            Step();
         }
 
-        public NSImage GetImage(int x, int y)
-        {
-            var currentY = y;// imageSheet.CGImage.Height - agent.ImageSize.Height - y;
-            var image = imageSheet.CGImage.WithImageInRect(new CGRect(x, currentY, agent.ImageSize.Width, agent.ImageSize.Height));
-            return new NSImage(image, new CGSize(agent.ImageSize.Width, agent.ImageSize.Height));
-        }
+		#region Public API
 
-        public bool HasAnimation(string name)
-        {
-            return Animations.Any(s => s.Name == name);
-        }
+		public NSImage GetImage (int x, int y)
+		{
+			var currentY = y;// imageSheet.CGImage.Height - agent.ImageSize.Height - y;
+			var image = imageSheet.CGImage.WithImageInRect (new CGRect (x, currentY, agent.ImageSize.Width, agent.ImageSize.Height));
+			return new NSImage (image, new CGSize (agent.ImageSize.Width, agent.ImageSize.Height));
+		}
 
-        bool _exiting;
-        private int currentFrameIndex;
+		public bool HasAnimation (string name)
+		{
+			return Animations.Any (s => s.Name == name);
+		}
 
-        internal void ExitAnimation()
-        {
-            _exiting = true;
-        }
+		public bool IsIdleAnimation ()
+		{
+			return currentAnimation?.IsIdle () ?? false;
+		}
 
-        #region Queue and Idle handling
+		public bool ShowAnimation (string animationName)
+		{
+			this._exiting = false;
+			if (!this.HasAnimation (animationName)) {
+				return false;
+			}
 
-        public bool IsIdleAnimation()
-        {
-            return currentAnimation?.IsIdle() ?? false;
-        }
+			this.currentAnimation = Animations.FirstOrDefault (s => s.Name == animationName);
+			this.currentAnimationName = animationName;
 
-        static readonly Random rnd = new Random(DateTime.Now.Millisecond);
-        float GetRandom() => rnd.Next(0, 1);
+			if (!this._started) {
+				this.Step ();
+				this._started = true;
+			}
 
-        public static AgentAnimation GetRandomAnimation(List<AgentAnimation> animations)
-        {
-            return animations[(int)rnd.Next(0, animations.Count - 1)];
-        }
+			this.currentFrame = null;
+			this.currentFrameIndex = 0;
+			return true;
+		}
 
-        public AgentAnimation GetRandomAnimation ()
-        {
-            return GetRandomAnimation(Animations);
-        }
+		public static AgentAnimation GetRandomAnimation (List<AgentAnimation> animations)
+		{
+			return animations[(int)rnd.Next (0, animations.Count - 1)];
+		}
 
-        public AgentAnimation GetIdleAnimation()
-        {
-            var r = new List<AgentAnimation>();
-            foreach (var animation in Animations)
-            {
-                if (animation.IsIdle ())
-                {
-                    r.Add(animation);
-                }
-            }
+		public AgentAnimation GetRandomAnimation ()
+		{
+			return GetRandomAnimation (Animations);
+		}
 
-            return GetRandomAnimation(r);
-        }
+		public AgentAnimation GetIdleAnimation ()
+		{
+			var r = new List<AgentAnimation> ();
+			foreach (var animation in Animations) {
+				if (animation.IsIdle ()) {
+					r.Add (animation);
+				}
+			}
 
-        public void OnQueueEmpty ()
-        {
-            if (agent.Hidden || this.IsIdleAnimation()) return;
-            var idleAnim = this.GetIdleAnimation();
-            this.ShowAnimation(idleAnim.Name);
-        }
+			return GetRandomAnimation (r);
+		}
 
-        #endregion
+		public void OnQueueEmpty ()
+		{
+			if (agent.Hidden || this.IsIdleAnimation ()) return;
+			var idleAnim = this.GetIdleAnimation ();
+			this.ShowAnimation (idleAnim.Name);
+		}
 
-        public bool ShowAnimation (string animationName)
-        {
-            this._exiting = false;
-            if (!this.HasAnimation(animationName))
-            {
-                return false;
-            }
+		public NSImage GetCurrentImage ()
+		{
+			return currentFrame?.GetImage ();
+		}
 
-            this.currentAnimation = Animations.FirstOrDefault(s => s.Name == animationName);
-            this.currentAnimationName = animationName;
+		public void ExitAnimation ()
+		{
+			_exiting = true;
+		}
 
-            if (!this._started)
-            {
-                this._step();   
-                this._started = true;
-            }
-
-            this.currentFrame = null;
-            this.currentFrameIndex = 0;
-            return true;
-        }
-
-        bool IsAtLastFrame ()
+        public bool IsAtLastFrame ()
         {
             return this.currentFrameIndex >= this.currentAnimation.Frames.Count - 1;
         }
 
-        private void _step()
+        public void Step ()
         {
 			//this is under a timer an needs
 
@@ -177,7 +171,7 @@ namespace ClippySharp
             }
 
             NeedsRefresh?.Invoke(this, EventArgs.Empty);
-            this.PlaySound();
+			agent.PlaySound (currentFrame?.Sound);
 
             aTimer.Interval = frame.Duration;
             aTimer.Start();
@@ -196,17 +190,7 @@ namespace ClippySharp
 
         }
 
-        public void PlaySound ()
-        {
-            var sound = currentFrame?.Sound;
-            if (string.IsNullOrEmpty (sound))
-            {
-                return;
-            }
-            Sounds.FirstOrDefault(s => s.Id == sound)?.Play ();
-        }
-
-        int GetNextAnimationFrame ()
+        public int GetNextAnimationFrame ()
         {
             if (currentFrame == null) 
                 return 0;
@@ -219,7 +203,8 @@ namespace ClippySharp
             {
                 return int.Parse (currentFrame.ExitBranch);
             }
-            else if (branching != null)
+            
+            if (branching != null)
             {
                 var random = GetRandom () * 100;
                 var branches = branching["branches"];
@@ -239,19 +224,21 @@ namespace ClippySharp
             return this.currentFrameIndex + 1;
         }
 
-        internal void Pause()
+		public void Pause()
         {
             aTimer.Stop();
         }
 
-        internal void Resume()
+        public void Resume()
         {
             aTimer.Start();
         }
 
-    }
+		#endregion
 
-    public class AnimationStateEventArgs : EventArgs
+	}
+
+	public class AnimationStateEventArgs : EventArgs
     {
         public AnimationStateEventArgs(string name, AnimationStates states)
         {

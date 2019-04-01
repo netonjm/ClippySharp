@@ -4,7 +4,7 @@ using ClippySharp.Models;
 
 namespace ClippySharp
 {
-    public class AgentAnimation
+    internal class AgentAnimation
     {
         const string Idle = "Idle";
 

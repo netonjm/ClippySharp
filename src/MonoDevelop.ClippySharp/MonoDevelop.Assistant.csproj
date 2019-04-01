@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net471</TargetFramework>
+    <PackOnBuild>true</PackOnBuild>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Xamarin.Mac" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MonoDevelop.Addins" Version="0.4.7" />
+  </ItemGroup>
+      <ItemGroup>
+        <ProjectReference Include="..\ClippySharp.Cocoa\ClippySharp.Cocoa.csproj" />
+      </ItemGroup>
+      <ItemGroup>
+        <AddinReference Include="MonoDevelop.MacPlatform" />
+        <AddinReference Include="MonoDevelop.TextEditor" />
+        <AddinReference Include="MonoDevelop.TextEditor.Cocoa" />
+      </ItemGroup>
+</Project>

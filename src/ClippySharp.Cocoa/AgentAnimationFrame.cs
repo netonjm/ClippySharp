@@ -4,7 +4,7 @@ using ClippySharp.Models;
 
 namespace ClippySharp
 {
-    public class AgentAnimationFrame
+    internal class AgentAnimationFrame
     {
         readonly AgentAnimator animator;
         readonly AgentFrameModel model;

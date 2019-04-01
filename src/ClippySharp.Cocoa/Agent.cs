@@ -8,24 +8,24 @@ using System.Linq;
 
 namespace ClippySharp
 {
-    public class Agent
+    public class Agent : IDisposable
     {
-        public event EventHandler HideBalloon;
-      
-        public CGSize ImageSize { get; }
-      
-        public event EventHandler NeedsRender;
+		public event EventHandler NeedsRender;
+		public event EventHandler Paused;
+		public event EventHandler Resumed;
+		public event EventHandler BalloonClosed;
 
+		public bool Sound { get; set; } = true;
+		public bool Hidden { get; internal set; }
+		public CGSize ImageSize { get; }
         public CGRect Offset { get; set; } = CGRect.Empty;
 
-        QueueProcessor queue;
+		internal AgentAnimator Animator { get; }
+        internal AgentModel Model { get; }
 
-        public AgentAnimator Animator { get; }
-        public bool Hidden { get; internal set; }
+		readonly QueueProcessor queue;
 
-        internal AgentModel Model { get; } 
-
-        public Agent(string agent)
+		public Agent(string agent)
         {
             queue = new QueueProcessor();
 
@@ -33,188 +33,89 @@ namespace ClippySharp
             Model = JsonConvert.DeserializeObject<AgentModel>(agentJson);
 
             ImageSize = new CGSize(Model.FrameSize[0], Model.FrameSize[1]);
-
             Animator = new AgentAnimator(agent, this);
 
-            Animator.NeedsRefresh += (sender, e) =>
-            {
-                NeedsRender?.Invoke(this, e);
-            };
-        }
+            Animator.NeedsRefresh += Animator_NeedsRefresh;
+		}
 
-        public void RefreshImage ()
-        {
-            NeedsRender?.Invoke(this, EventArgs.Empty);
-        }
+		#region Public API
 
-        internal NSImage GetCurrentImage()
-        {
-            return Animator.GetCurrentImage();
-        }
+		public void PlaySound (string id)
+		{
+			if (!Sound || Hidden || string.IsNullOrEmpty (id)) {
+				return;
+			}
+			var sound = Animator.Sounds.FirstOrDefault (s => s.Id == id);
+			if (sound == null) {
+				throw new Exception ("");
+			}
 
-        public void PlaySound (string id)
-        {
-            var sound = Animator.Sounds.FirstOrDefault(s => s.Id == id);
-            if (sound == null)
-            {
-                throw new Exception("");
-            }
+			SoundPlayer.Current.Play (sound);
+		}
 
-            SoundPlayer.Current.Play(sound);
-        }
+		public void Speak (string text, string hold)
+		{
+			if (Hidden) {
+				return;
+			}
+			AddToQueue (() => {
+				//balloon.Speak(complete, text, hold);
+			});
+		}
 
-        public void Speak(string text, string hold)
-        {
-            AddToQueue(() =>
-            {
-                //balloon.Speak(complete, text, hold);
-            });
-        }
+		public void Stop ()
+		{
+			this.queue.Clear ();
 
-        private void AddToQueue(Action p)
-        {
-            queue.Enqueue(p);
-        }
+			Animator.ExitAnimation ();
+			CloseBalloon ();
+		}
 
-        public bool Play (string animation, int timeout = 5000)
-        {
-            if (!Animator.HasAnimation(animation)) return false;
+		public void Show (bool fast)
+		{
+			Hidden = false;
+			if (fast) {
+				Resume ();
+				Animator.OnQueueEmpty ();
+				return;
+			}
 
-            //addt
-            AddToQueue(() =>
-            {
-                var completed = false;
+			Resume ();
+			Play ("Show");
+		}
 
-                Animator.AnimationEnded += (sender, e) =>
-                {
-                    if (e.State == AnimationStates.Exited)
-                    {
-                        completed = true;
-                    }
-                };
+		public bool Animate ()
+		{
+			if (Hidden) {
+				return false;
+			}
 
-                if (timeout > 0)
-                {
-                    //window.setTimeout($.proxy(function() {
-                    //    if (completed) return;
-                    //    // exit after timeout
-                    //    this._animator.exitAnimation();
-                    //}, this), timeout)
-                }
+			var animations = Animator.Animations.Where (s => !s.IsIdle ())
+				.ToList ();
 
-                PlayInternal(animation);
-            });
-            return true;
-        }
+			var animation = AgentAnimator.GetRandomAnimation (animations);
+			return Play (animation.Name);
+		}
 
-        public void CloseBalloon ()
-        {
-            BalloonClosed?.Invoke(this, EventArgs.Empty);
-        }
+		public bool GestureAt (float x, float y)
+		{
+			if (Hidden) {
+				return false;
+			}
+			var d = GetDirection (x, y);
+			var gAnim = "Gesture" + d.ToString ();
+			var lookAnim = "Look" + d.ToString ();
 
-        public EventHandler BalloonClosed;
+			var animation = Animator.HasAnimation (gAnim) ? gAnim : lookAnim;
+			return Play (animation);
+		}
 
-        public void AddDelay (int miliseconds = 250)
-        {
-            AddToQueue(() =>
-          {
-              this.Animator.OnQueueEmpty();
-              Thread.Sleep(miliseconds);
-          });
-        }
+		public void MoveTo (float x, float y, int duration)
+		{
 
-        private void PlayInternal(string animation)
-        {
-            if (Animator.IsIdleAnimation() )
-            {
-                    //this._idleDfd.done($.proxy(function() {
-                    //    this._playInternal(animation, callback);
-                    //}, this))
-            }
+		}
 
-            this.Animator.ShowAnimation(animation);
-        }
-
-        public void Stop()
-        {
-            this.queue.Clear();
-
-            Animator.ExitAnimation();
-            HideBalloon?.Invoke(this, EventArgs.Empty);
-        }
-
-        public void Show (bool fast)
-        {
-            Hidden = false;
-            if (fast)
-            {
-                Resume();
-                Animator.OnQueueEmpty();
-                return;
-            }
-
-            Resume();
-            Play("Show");
-        }
-
-        public bool Animate()
-        {
-            var animations = Animator.Animations.Where(s => !s.IsIdle())
-                .ToList ();
-
-            var animation = AgentAnimator.GetRandomAnimation(animations);
-            return Play(animation.Name);
-        }
-
-        #region API
-
-        public bool GestureAt(float x, float y)
-        {
-            var d = GetDirection(x, y);
-            var gAnim = "Gesture" + d.ToString();
-            var lookAnim = "Look" + d.ToString();
-
-            var animation = Animator.HasAnimation(gAnim) ? gAnim : lookAnim;
-            return Play(animation);
-        }
-
-        public void MoveTo(float x, float y, int duration)
-        {
-
-        }
-
-        AgentDirection GetDirection(float x, float y)
-        {
-            var offset = Offset;
-            var h = ImageSize.Height;
-            var w = ImageSize.Width;
-
-            var centerX = (offset.Left + w / 2);
-            var centerY = (offset.Top + h / 2);
-
-            var a = centerY - y;
-            var b = centerX - x;
-
-            var r = Math.Round((180 * Math.Atan2(a, b)) / Math.PI);
-
-            // Left and Right are for the character, not the screen :-/
-            if (-45 <= r && r < 45) return AgentDirection.Right;
-            if (45 <= r && r < 135) return AgentDirection.Up;
-            if (135 <= r && r <= 180 || -180 <= r && r < -135) return AgentDirection.Left;
-            if (-135 <= r && r < -45) return AgentDirection.Down;
-
-            // sanity check
-            return AgentDirection.Top;
-        }
-
-        #endregion
-
-        #region Pause Resume
-
-        public event EventHandler Paused;
-        public event EventHandler Resumed;
-
-        public void Pause ()
+		public void Pause ()
         {
             Animator.Pause();
             Paused?.Invoke(this, EventArgs.Empty);
@@ -226,8 +127,112 @@ namespace ClippySharp
             Resumed?.Invoke(this, EventArgs.Empty);
         }
 
-        #endregion
+		public void RefreshImage ()
+		{
+			NeedsRender?.Invoke (this, EventArgs.Empty);
+		}
 
+		public bool Play (string animation, int timeout = 5000)
+		{
+			if (Hidden) {
+				return false;
+			}
 
-    }
+			if (!Animator.HasAnimation (animation)) return false;
+
+			//addt
+			AddToQueue (() => {
+				var completed = false;
+
+				Animator.AnimationEnded += (sender, e) => {
+					if (e.State == AnimationStates.Exited) {
+						completed = true;
+					}
+				};
+
+				if (timeout > 0) {
+					//window.setTimeout($.proxy(function() {
+					//    if (completed) return;
+					//    // exit after timeout
+					//    this._animator.exitAnimation();
+					//}, this), timeout)
+				}
+
+				PlayInternal (animation);
+			});
+			return true;
+		}
+
+		public void CloseBalloon ()
+		{
+			BalloonClosed?.Invoke (this, EventArgs.Empty);
+		}
+
+		#endregion
+
+		void Animator_NeedsRefresh (object sender, EventArgs e)
+		{
+			NeedsRender?.Invoke (this, e);
+		}
+
+		internal NSImage GetCurrentImage ()
+		{
+			return Animator.GetCurrentImage ();
+		}
+
+		void AddToQueue (Action p)
+		{
+			queue.Enqueue (p);
+		}
+
+		void AddDelay (int miliseconds = 250)
+		{
+			AddToQueue (() =>
+			{
+				this.Animator.OnQueueEmpty ();
+				Thread.Sleep (miliseconds);
+			});
+		}
+
+		void PlayInternal (string animation)
+		{
+			if (Animator.IsIdleAnimation ()) {
+				//this._idleDfd.done($.proxy(function() {
+				//    this._playInternal(animation, callback);
+				//}, this))
+			}
+
+			this.Animator.ShowAnimation (animation);
+		}
+
+		AgentDirection GetDirection (float x, float y)
+		{
+			var offset = Offset;
+			var h = ImageSize.Height;
+			var w = ImageSize.Width;
+
+			var centerX = (offset.Left + w / 2);
+			var centerY = (offset.Top + h / 2);
+
+			var a = centerY - y;
+			var b = centerX - x;
+
+			var r = Math.Round ((180 * Math.Atan2 (a, b)) / Math.PI);
+
+			// Left and Right are for the character, not the screen :-/
+			if (-45 <= r && r < 45) return AgentDirection.Right;
+			if (45 <= r && r < 135) return AgentDirection.Up;
+			if (135 <= r && r <= 180 || -180 <= r && r < -135) return AgentDirection.Left;
+			if (-135 <= r && r < -45) return AgentDirection.Down;
+
+			// sanity check
+			return AgentDirection.Top;
+		}
+
+		public void Dispose ()
+		{
+			Animator.NeedsRefresh -= Animator_NeedsRefresh;
+		}
+
+	}
 }

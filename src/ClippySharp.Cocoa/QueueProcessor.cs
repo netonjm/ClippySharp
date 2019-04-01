@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ClippySharp
 {
-    public class QueueProcessor
+    public class QueueProcessor : IDisposable
     {
         const int QueueProcessorDelay = 500;
         public readonly Queue<Action> queue;
@@ -60,5 +60,11 @@ namespace ClippySharp
         {
             queue.Clear();
         }
-    }
+
+		public void Dispose ()
+		{
+			source?.Cancel ();
+
+		}
+	}
 }

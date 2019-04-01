@@ -1,17 +1,18 @@
 ﻿using System;
 using AppKit;
-using ClippySharp;
+using CoreGraphics;
 using Foundation;
 
-namespace ClippyTest
+namespace ClippySharp
 {
     public class AgentView : NSImageView
     {
-        readonly Agent agent;
+		public override bool MouseDownCanMoveWindow => true;
+
+		readonly Agent agent;
         public AgentView(Agent agent)
         {
             this.agent = agent;
-
             agent.NeedsRender += Agent_NeedsRender;
             agent.RefreshImage();
         }

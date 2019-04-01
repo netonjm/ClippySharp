@@ -7,7 +7,7 @@ namespace ClippyTest
 {
     static class MainClass
     {
-        static void Main(string[] args)
+		static void Main(string[] args)
         {
             NSApplication.Init();
             NSApplication.SharedApplication.ActivationPolicy = NSApplicationActivationPolicy.Regular;
@@ -36,8 +36,8 @@ namespace ClippyTest
             var popUpButton = new NSPopUpButton();
             stackView.AddArrangedSubview(popUpButton);
 
-            var agent = new Agent("clippy");
-            var agentView = new AgentView(agent);
+            var agent = new Agent ("clippy");
+            var agentView = new AgentView (agent);
             stackView.AddArrangedSubview(agentView);
 
             agent.Animate();

@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClippySharp.Sample", "Clipp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClippySharp.Cocoa", "ClippySharp.Cocoa\ClippySharp.Cocoa.csproj", "{AB7FD7F4-7CDE-449E-B053-4BA2BC3C3C71}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Assistant", "MonoDevelop.ClippySharp\MonoDevelop.Assistant.csproj", "{D97C6484-C859-4295-A12E-D53B8A977337}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,5 +21,9 @@ Global
 		{AB7FD7F4-7CDE-449E-B053-4BA2BC3C3C71}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB7FD7F4-7CDE-449E-B053-4BA2BC3C3C71}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB7FD7F4-7CDE-449E-B053-4BA2BC3C3C71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D97C6484-C859-4295-A12E-D53B8A977337}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D97C6484-C859-4295-A12E-D53B8A977337}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D97C6484-C859-4295-A12E-D53B8A977337}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D97C6484-C859-4295-A12E-D53B8A977337}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

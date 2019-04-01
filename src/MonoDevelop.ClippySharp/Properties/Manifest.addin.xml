@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ExtensionModel>
+    <Runtime>
+    </Runtime>
+    <Extension path="/MonoDevelop/Ide/StartupHandlers">
+        <Class class="MonoDevelop.Assistant.Commands.InitCommandHandler"/>
+    </Extension>
+     
+   <Extension path="/MonoDevelop/Ide/GlobalOptionsDialog/Other">
+        <Section id="AssistantSettings" _label="Assistant Settings" class = "MonoDevelop.Assistant.OptionsPanel" icon="md-prefs-source" />
+  </Extension>
+</ExtensionModel>
