@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Threading;
 using AppKit;
-using ClippySharp;
 using ClippySharp.Models;
 using CoreGraphics;
 using Newtonsoft.Json;
 using System.Linq;
 
-namespace ClippyTest
+namespace ClippySharp
 {
     public class Agent
     {

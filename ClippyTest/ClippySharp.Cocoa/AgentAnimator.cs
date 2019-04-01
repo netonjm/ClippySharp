@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 using System.Linq;
 using CoreGraphics;
 
-namespace ClippyTest
+namespace ClippySharp
 {
     public class AgentAnimator
     {
@@ -208,11 +208,12 @@ namespace ClippyTest
 
         public void PlaySound ()
         {
-            if (string.IsNullOrEmpty (CurrentFrame.Sound))
+            var currentFrame = CurrentFrame;
+            if (currentFrame != null && string.IsNullOrEmpty (currentFrame.Sound))
             {
                 return;
             }
-            Sounds.FirstOrDefault(s => s.Id == CurrentFrame.Sound)?.Play ();
+            Sounds.FirstOrDefault(s => s.Id == currentFrame.Sound)?.Play ();
         }
 
         int _getNextAnimationFrame ()

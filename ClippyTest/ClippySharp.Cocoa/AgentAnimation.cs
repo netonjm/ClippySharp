@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using ClippySharp.Models;
 
-namespace ClippyTest
+namespace ClippySharp
 {
     public class AgentAnimation
     {

@@ -1,7 +1,7 @@
 ﻿using AppKit;
 using ClippySharp.Models;
 
-namespace ClippyTest
+namespace ClippySharp
 {
     public class AgentAnimationFrame
     {

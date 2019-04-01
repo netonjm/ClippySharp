@@ -67,6 +67,8 @@
     <Compile Include="AgentBalloon.cs" />
     <Compile Include="AgentView.cs" />
     <Compile Include="QueueProcessor.cs" />
+    <Compile Include="AnimationStates.cs" />
+    <Compile Include="AgentDirection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />

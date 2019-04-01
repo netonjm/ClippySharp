@@ -16,8 +16,6 @@ namespace ClippySharp
 			var assembly = typeof (AssemblyHelper).Assembly;
 			var name = assembly.GetName ().Name;
 			var fullPath = string.Format ("{0}.Resources/{1}", name, resourceName);
-			//ClippySharp.Cocoa.Resources.agents.clippy.agent.json
-			//ClippySharp.Cocoa.Resources/agents/clippy/agent.json
 			using (Stream stream = assembly.GetManifestResourceStream (fullPath))
 			using (StreamReader reader = new StreamReader (stream)) {
 				string result = reader.ReadToEnd ();

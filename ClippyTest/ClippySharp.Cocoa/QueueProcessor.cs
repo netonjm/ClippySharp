@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ClippyTest
+namespace ClippySharp
 {
     public class QueueProcessor
     {
+        const int QueueProcessorDelay = 500;
         public readonly Queue<Action> queue;
-        System.Threading.CancellationTokenSource source;
+        CancellationTokenSource source;
+
         public QueueProcessor()
         {
             queue = new Queue<Action>();
@@ -19,7 +21,7 @@ namespace ClippyTest
         {
             Stop();
 
-            source = new System.Threading.CancellationTokenSource();
+            source = new CancellationTokenSource();
             Task.Run(() =>
             {
                 while (!source.IsCancellationRequested)
@@ -29,7 +31,7 @@ namespace ClippyTest
                         queue.Dequeue()?.Invoke();
                     } else
                     {
-                        Thread.Sleep(500);
+                        Thread.Sleep(QueueProcessorDelay);
                     }
 
                 }

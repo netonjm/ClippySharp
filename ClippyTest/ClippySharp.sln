@@ -1,7 +1,7 @@
 
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClippySharp.Sample", "ClippyTest\ClippySharp.Sample.csproj", "{E2D7A65A-5903-4B38-A255-79493BE21F3B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClippySharp.Sample", "ClippySharp.Sample\ClippySharp.Sample.csproj", "{E2D7A65A-5903-4B38-A255-79493BE21F3B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClippySharp.Cocoa", "ClippySharp.Cocoa\ClippySharp.Cocoa.csproj", "{AB7FD7F4-7CDE-449E-B053-4BA2BC3C3C71}"
 EndProject

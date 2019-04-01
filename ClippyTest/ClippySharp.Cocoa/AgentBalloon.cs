@@ -5,24 +5,8 @@ using AppKit;
 using CoreGraphics;
 using System.Linq;
 
-namespace ClippyTest
+namespace ClippySharp
 {
-    public enum AnimationStates
-    {
-        Waiting = 1,
-        Exited = 0
-    }
-
-    public class AgentData
-    {
-
-    }
-
-    public class AgentSounds
-    {
-
-    }
-
     public class AgentBalloon
     {
         private Agent agent;
@@ -42,10 +26,4 @@ namespace ClippyTest
            
         }
     }
-
-    public enum AgentDirection
-    {
-        Right, Up, Left, Down, Top
-    }
-
 }

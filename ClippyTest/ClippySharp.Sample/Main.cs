@@ -1,4 +1,5 @@
 ﻿using AppKit;
+using ClippySharp;
 using CoreGraphics;
 using System.Linq;
 
@@ -14,31 +15,26 @@ namespace ClippyTest
             var xPos = NSScreen.MainScreen.Frame.Width / 2;
             var yPos = NSScreen.MainScreen.Frame.Height / 2;
 
-            var mainWindow = new NSWindow(new CGRect(xPos, yPos, 300, 368), NSWindowStyle.Borderless | NSWindowStyle.Closable, NSBackingStore.Buffered, false);
-            mainWindow.Title = "ClippySharp";
+            var mainWindow = new NSWindow(new CGRect(xPos, yPos, 200, 150), NSWindowStyle.Borderless, NSBackingStore.Buffered, false)
+            {
+                Title = "ClippySharp",
 
-            mainWindow.IsOpaque = false;
-            mainWindow.BackgroundColor = NSColor.FromRgba(red: 1, green: 1, blue: 1f, alpha: 1);
+                IsOpaque = false,
+                BackgroundColor = NSColor.FromRgba(red: 1, green: 1, blue: 1f, alpha: 0.5f)
+            };
+
+            mainWindow.MovableByWindowBackground = true;
 
             var stackView = new NSStackView()
             {
                 Orientation = NSUserInterfaceLayoutOrientation.Vertical,
-                Alignment = NSLayoutAttribute.Top,
                 Distribution = NSStackViewDistribution.Fill
             };
 
             mainWindow.ContentView = stackView;
 
-            var horizontalStackView = new NSStackView()
-            {
-                Orientation = NSUserInterfaceLayoutOrientation.Horizontal,
-                Alignment = NSLayoutAttribute.CenterY,
-                Distribution = NSStackViewDistribution.Fill
-            };
-            stackView.AddArrangedSubview(horizontalStackView);
-
             var popUpButton = new NSPopUpButton();
-            horizontalStackView.AddArrangedSubview(popUpButton);
+            stackView.AddArrangedSubview(popUpButton);
 
             var agent = new Agent("clippy");
             var agentView = new AgentView(agent);
