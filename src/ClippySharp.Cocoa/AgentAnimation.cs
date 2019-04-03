@@ -13,12 +13,16 @@ namespace ClippySharp
         public List<AgentAnimationFrame> Frames { get; }
         internal bool useExitBranching;
 
-        public AgentAnimation(AgentAnimator animator, string name, AgentFrameModel[] frames)
+		AgentAnimationModel model;
+
+		public AgentAnimation(AgentAnimator animator, string name, AgentAnimationModel model)
         {
-            Name = name;
+			this.model = model;
+
+			Name = name;
             Frames = new List<AgentAnimationFrame>();
 
-            foreach (var frame in frames)
+            foreach (var frame in model.Frames)
             {
                 Frames.Add(new AgentAnimationFrame(animator, frame));
             }

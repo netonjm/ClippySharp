@@ -9,13 +9,19 @@ namespace ClippySharp
     {
 		public override bool MouseDownCanMoveWindow => true;
 
-		readonly Agent agent;
-        public AgentView(Agent agent)
-        {
-            this.agent = agent;
-            agent.NeedsRender += Agent_NeedsRender;
-            agent.RefreshImage();
-        }
+	 	public Agent Agent { get; private set; }
+
+		public void ConfigureAgent (Agent agent)
+		{
+			if (this.Agent != null) {
+				this.Agent.NeedsRender -= Agent_NeedsRender;
+				this.Agent.Dispose ();
+			}
+
+			this.Agent = agent;
+			this.Agent.NeedsRender += Agent_NeedsRender;
+			this.Agent.RefreshImage ();
+		}
 
         NSObject clickMonitor;
 
@@ -24,9 +30,13 @@ namespace ClippySharp
         public override void MouseDown(NSEvent theEvent)
         {
             base.MouseDown(theEvent);
-            if (theEvent.ClickCount == 1)
+			if (Agent == null) {
+				return;
+			}
+
+            if (theEvent.ClickCount == 2)
             {
-                agent.Animate();
+                Agent.Animate();
             }
 
             //if (ismoving)
@@ -70,13 +80,16 @@ namespace ClippySharp
         {
             InvokeOnMainThread(() =>
             {
-                Image = agent.GetCurrentImage();
+                Image = Agent.GetCurrentImage();
             });
         }
 
         protected override void Dispose(bool disposing)
         {
-            agent.NeedsRender -= Agent_NeedsRender;
+			if (Agent != null) {
+				Agent.NeedsRender -= Agent_NeedsRender;
+			}
+
             base.Dispose(disposing);
         }
     }

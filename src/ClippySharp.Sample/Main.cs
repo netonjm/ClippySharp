@@ -7,6 +7,10 @@ namespace ClippyTest
 {
     static class MainClass
     {
+		static AgentView agentView;
+		static NSPopUpButton agentPopupButton;
+		static NSPopUpButton animationPopupButton;
+
 		static void Main(string[] args)
         {
             NSApplication.Init();
@@ -33,30 +37,49 @@ namespace ClippyTest
 
             mainWindow.ContentView = stackView;
 
-            var popUpButton = new NSPopUpButton();
-            stackView.AddArrangedSubview(popUpButton);
+            agentPopupButton = new NSPopUpButton();
+            stackView.AddArrangedSubview(agentPopupButton);
 
-            var agent = new Agent ("clippy");
-            var agentView = new AgentView (agent);
+			foreach (var item in AgentContext.Current.GetAgents ()) {
+				agentPopupButton.AddItem (item);
+			}
+
+			animationPopupButton = new NSPopUpButton ();
+			stackView.AddArrangedSubview (animationPopupButton);
+
+            agentView = new AgentView ();
             stackView.AddArrangedSubview(agentView);
 
-            agent.Animate();
+			agentPopupButton.Activated += AgentPopupButton_Activated;
 
-            foreach (var animation in agent.GetAnimations ())
-            {
-                //fill with all animation
-                popUpButton.AddItem(animation);
-            }
+			animationPopupButton.Activated += AnimationPopupButton_Activated;
 
-            popUpButton.Activated += (sender, e) =>
-            {
-                var animation = popUpButton.TitleOfSelectedItem;
-                agent.Play(animation);
-            };
+			AgentPopupButton_Activated (null, null);
 
-            mainWindow.MakeKeyAndOrderFront(null);
+			mainWindow.MakeKeyAndOrderFront(null);
             NSApplication.SharedApplication.ActivateIgnoringOtherApps(true);
             NSApplication.SharedApplication.Run();
-        }
-    }
+		}
+
+		static void AnimationPopupButton_Activated (object sender, System.EventArgs e)
+		{
+			var animation = animationPopupButton.TitleOfSelectedItem;
+			agentView.Agent.Play (animation);
+		}
+
+		static void AgentPopupButton_Activated (object sender, System.EventArgs e)
+		{
+			var agentName = agentPopupButton.TitleOfSelectedItem;
+			var agent = new Agent (agentName);
+			agentView.ConfigureAgent (agent);
+
+			agent.Animate ();
+
+			animationPopupButton.RemoveAllItems ();
+			foreach (var animation in agent.GetAnimations ()) {
+				//fill with all animation
+				animationPopupButton.AddItem (animation);
+			}
+		}
+	}
 }

@@ -27,7 +27,7 @@ namespace ClippySharp
 		readonly Agent agent;
 
 		bool _exiting;
-		bool _started;
+		internal bool _started;
 		int currentFrameIndex;
 
 		AgentAnimation currentAnimation;
@@ -50,12 +50,13 @@ namespace ClippySharp
             imageSheet = AssemblyHelper.ReadResourceImage(name, "map.png");
 
             Animations = new List<AgentAnimation>();
-            foreach (var animation in agent.Model.Animations)
+            foreach (var animationKey in agent.Model.Animations)
             {
-                if (animation.Value.TryGetValue("frames", out AgentFrameModel[] frames))
-                {
-                    Animations.Add(new AgentAnimation(this, animation.Key, frames));
-                };
+
+                //if (animationKey.Value.TryGetValue("frames", out AgentAnimationModel animation))
+                //{
+                    Animations.Add(new AgentAnimation(this, animationKey.Key, animationKey.Value));
+               // };
             }
 
             aTimer = new System.Timers.Timer();
@@ -173,12 +174,15 @@ namespace ClippySharp
             NeedsRefresh?.Invoke(this, EventArgs.Empty);
 			agent.PlaySound (currentFrame?.Sound);
 
-            aTimer.Interval = frame.Duration;
-            aTimer.Start();
+			if (frame.Duration > 0) {
+				aTimer.Interval = frame.Duration;
+				aTimer.Start ();
+			}
 
-            if (frameChanged && this.IsAtLastFrame())
+			if (frameChanged && this.IsAtLastFrame())
             {
-                if (animation.useExitBranching && !this._exiting)
+				_started = false;
+				if (animation.useExitBranching && !this._exiting)
                 {
                     AnimationEnded?.Invoke(this, new AnimationStateEventArgs ( currentAnimationName, AnimationStates.Waiting));
                 }

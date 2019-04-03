@@ -3,6 +3,15 @@ using Newtonsoft.Json;
 
 namespace ClippySharp.Models
 {
+	public class AgentAnimationModel
+	{
+		[JsonProperty ("useExitBranching")]
+		public bool UseExitBranching { get; set; }
+
+		[JsonProperty ("frames")]
+		public AgentFrameModel[] Frames { get; set; }
+	}
+
 	public class AgentModel
 	{
 		[JsonProperty ("overlayCount")]
@@ -15,6 +24,6 @@ namespace ClippySharp.Models
 		public int[] FrameSize { get; set; }
 
 		[JsonProperty ("animations")]
-		public Dictionary<string, Dictionary<string, AgentFrameModel[]>> Animations { get; set; }
+		public Dictionary<string, AgentAnimationModel> Animations { get; set; }
 	}
 }

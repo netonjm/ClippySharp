@@ -26,6 +26,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 using System;
+using ClippySharp;
 using Gtk;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
@@ -44,12 +45,44 @@ namespace MonoDevelop.Assistant
 				PropertyService.Set (AdioKey, value);
 			}
 		}
+
+		const string AgentSelectedKey = "MonoDevelop.Assistant.AgentSelected";
+		public static string AgentSelected {
+			get => PropertyService.Get<string> (AgentSelectedKey);
+			set {
+				AgentService.Current.SetAgent (value, true);
+				PropertyService.Set (AgentSelectedKey, value);
+			}
+		}
 	}
 
 	class OptionsWidget : VBox
 	{
-		CheckButton tokenValueEntry;
+		CheckButton checkEnabledButton;
 		OptionsPanel panel;
+		ComboBox agentComboBox;
+
+		string GetSelectedValue (ComboBox comboBox)
+		{
+			var row = new GLib.Value ();
+			agentComboBox.GetActiveIter (out TreeIter iter);
+			agentComboBox.Model.GetValue (iter, 0, ref row);
+			return row.Val as string;
+		}
+
+		void SetSelectedValue (ComboBox comboBox, string value)
+		{
+			comboBox.Model.GetIterFirst (out TreeIter iter);
+			do {
+				GLib.Value thisRow = new GLib.Value ();
+				comboBox.Model.GetValue (iter, 0, ref thisRow);
+				if ((thisRow.Val as string).Equals (value)) {
+					comboBox.SetActiveIter (iter);
+					break;
+				}
+			} while (comboBox.Model.IterNext (ref iter));
+		}
+
 		public OptionsWidget (OptionsPanel figmaOptionsPanel)
 		{
 			panel = figmaOptionsPanel;
@@ -57,21 +90,33 @@ namespace MonoDevelop.Assistant
 			var mainVBox = new HBox ();
 			PackStart (mainVBox);
 
-			var tokenLabel = new Label ();
-			tokenLabel.Text = GettextCatalog.GetString ("Sound:");
-			mainVBox.PackStart (tokenLabel, false, false, 10);
-			tokenValueEntry = new CheckButton ();
-			mainVBox.PackStart (tokenValueEntry, false, false, 10);
+			var agentLabel = new Label ();
+			agentLabel.Text = GettextCatalog.GetString ("Agent:");
+			mainVBox.PackStart (agentLabel, false, false, 10);
 
-			tokenValueEntry.WidthRequest = 350;
+			var agents = AgentContext.Current.GetAgents ();
 
-			tokenValueEntry.Activated += NeedsStoreValue;
-			tokenValueEntry.FocusOutEvent += NeedsStoreValue;
+			agentComboBox = new ComboBox (agents);
+			mainVBox.PackStart (agentComboBox, true, true, 10);
+
+			var soundLabel = new Label {
+				Text = GettextCatalog.GetString ("Sound:")
+			};
+			mainVBox.PackStart (soundLabel, false, false, 10);
+			checkEnabledButton = new CheckButton ();
+			mainVBox.PackStart (checkEnabledButton, false, false, 10);
+			checkEnabledButton.WidthRequest = 350;
 
 			ShowAll ();
 
-			tokenValueEntry.Active = AgentService.Current.Agent.Sound; ;
-			AgentService.Current.Agent.Sound = tokenValueEntry.State == StateType.Active;
+
+			SetSelectedValue (agentComboBox, PropertySettings.AgentSelected);
+
+			checkEnabledButton.Active = AgentService.Current.Agent.Sound; ;
+
+			agentComboBox.Changed += NeedsStoreValue;
+			checkEnabledButton.Activated += NeedsStoreValue;
+			checkEnabledButton.FocusOutEvent += NeedsStoreValue;
 		}
 
 		void NeedsStoreValue (object sender, EventArgs e)
@@ -86,7 +131,20 @@ namespace MonoDevelop.Assistant
 
 		void Store ()
 		{
-			AgentService.Current.Agent.Sound = tokenValueEntry.Active;
+			PropertySettings.AudioEnabled = checkEnabledButton.Active;
+
+			var selectedValue = GetSelectedValue (agentComboBox);
+			if (!string.IsNullOrEmpty (selectedValue)) {
+				PropertySettings.AgentSelected = selectedValue;
+			}
+		}
+
+		public override void Dispose ()
+		{
+			agentComboBox.Changed -= NeedsStoreValue;
+			checkEnabledButton.Activated -= NeedsStoreValue;
+			checkEnabledButton.FocusOutEvent -= NeedsStoreValue;
+			base.Dispose ();
 		}
 	}
 

@@ -30,26 +30,43 @@ using System;
 using AppKit;
 using ClippySharp;
 using CoreGraphics;
+using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.WelcomePage;
+using System.Linq;
+using MonoDevelop.Components.Mac;
 
 namespace MonoDevelop.Assistant
 {
 	class AgentService : IDisposable
 	{
-		public Agent Agent { get; }
+		public Agent Agent { get; private set; }
 
+		AgentView agentView;
 		NSWindow window;
+
+		public void SetAgent (string name, bool initialAnimation)
+		{
+			Agent = new Agent (name) {
+				Sound = PropertySettings.AudioEnabled
+			};
+			agentView.ConfigureAgent (Agent);
+
+			if (initialAnimation)
+				Agent.Animate ();
+		}
 
 		AgentService ()
 		{
-			this.Agent = new Agent ("clippy");
-			this.Agent.Sound = PropertySettings.AudioEnabled;
 
 			var xPos = NSScreen.MainScreen.Frame.Width / 2;
 			var yPos = NSScreen.MainScreen.Frame.Height / 2;
 
-			var agentView = new AgentView (Agent);
+			agentView = new AgentView ();
+
+			SetAgent (PropertySettings.AgentSelected ?? "clippy", false);
+
 			window = new NSWindow (new CGRect (xPos, yPos, 100, 100), NSWindowStyle.Borderless, NSBackingStore.Buffered, false) {
 				Title = "ClippySharp",
 				IsOpaque = false,
@@ -63,13 +80,34 @@ namespace MonoDevelop.Assistant
 
 			Ide.MessageService.PlaceDialog (window, Ide.MessageService.RootWindow);
 
+			IdeApp.Workbench.RootWindow.Hidden += RootWindow_Hidden;
+
+			IdeApp.Workbench.RootWindow.Shown += RootWindow_Shown;
+
 			IdeApp.ProjectOperations.StartClean += ProjectOperations_StartClean;
 			IdeApp.ProjectOperations.EndBuild += ProjectOperations_EndBuild;
 			IdeApp.ProjectOperations.EndClean += ProjectOperations_Finished;
 			IdeApp.ProjectOperations.StartBuild += ProjectOperations_StartBuild;
-			OrderFront ();
+		}
 
+		void RootWindow_Shown (object sender, EventArgs e)
+		{
+			var parent = GtkMacInterop.GetNSWindow (IdeApp.Workbench.RootWindow);
+			parent.AddChildWindow (window, NSWindowOrderingMode.Above);
+
+			OrderFront ();
 			Agent.Play ("Greeting");
+			Agent.Sound = PropertySettings.AudioEnabled;
+		}
+
+		void RootWindow_Hidden (object sender, EventArgs e)
+		{
+			var parent = GtkMacInterop.GetNSWindow (IdeApp.Workbench.RootWindow);
+			parent.RemoveChildWindow (window);
+
+			OrderFront ();
+			Agent.Play ("GoodBye");
+			Agent.Sound = false;
 		}
 
 		void ProjectOperations_StartClean (object sender, Projects.CleanEventArgs args)
@@ -86,20 +124,20 @@ namespace MonoDevelop.Assistant
 
 		void ProjectOperations_Finished (object sender, Projects.CleanEventArgs args)
 		{
-			FinishedCorrectly ();
+			FinishedSuccessful ();
 		}
 
 		void ProjectOperations_EndBuild (object sender, Projects.BuildEventArgs args) 
 		{
 			if (args.Success) {
-				FinishedCorrectly ();
+				FinishedSuccessful ();
 			} else {
 				OrderFront ();
 				Agent.Play ("Wave");
 			}
 		}
 
-		void FinishedCorrectly ()
+		void FinishedSuccessful ()
 		{
 			OrderFront ();
 			Agent.Play ("Congratulate");
@@ -126,6 +164,7 @@ namespace MonoDevelop.Assistant
 
 			Agent.Dispose ();
 			window = null;
+			agentView = null;
 		}
 
 		static AgentService current;

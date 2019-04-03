@@ -8,7 +8,8 @@ using System.Linq;
 
 namespace ClippySharp
 {
-    public class Agent : IDisposable
+
+	public class Agent : IDisposable
     {
 		public event EventHandler NeedsRender;
 		public event EventHandler Paused;
@@ -27,10 +28,14 @@ namespace ClippySharp
 
 		public Agent(string agent)
         {
+			//we initialize context
+			AgentContext.Current.Initialize ();
+
             queue = new QueueProcessor();
 
             var agentJson = AssemblyHelper.ReadResourceString(agent, "agent.json");
             Model = JsonConvert.DeserializeObject<AgentModel>(agentJson);
+
 
             ImageSize = new CGSize(Model.FrameSize[0], Model.FrameSize[1]);
             Animator = new AgentAnimator(agent, this);
@@ -149,19 +154,20 @@ namespace ClippySharp
 			AddToQueue (() => {
 				var completed = false;
 
-				Animator.AnimationEnded += (sender, e) => {
-					if (e.State == AnimationStates.Exited) {
-						completed = true;
+				EventHandler<AnimationStateEventArgs> handler = null;
+				handler = (s, e) => {
+					Animator.AnimationEnded -= handler;
+
+					if (timeout > 0) {
+						//window.setTimeout($.proxy(function() {
+						//    if (completed) return;
+						//    // exit after timeout
+						//    this._animator.exitAnimation();
+						//}, this), timeout)
 					}
 				};
 
-				if (timeout > 0) {
-					//window.setTimeout($.proxy(function() {
-					//    if (completed) return;
-					//    // exit after timeout
-					//    this._animator.exitAnimation();
-					//}, this), timeout)
-				}
+				Animator.AnimationEnded += handler;
 
 				PlayInternal (animation);
 			});
