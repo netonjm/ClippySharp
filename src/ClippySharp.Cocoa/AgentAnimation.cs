@@ -11,9 +11,9 @@ namespace ClippySharp
         public string Name { get; }
 
         public List<AgentAnimationFrame> Frames { get; }
-        internal bool useExitBranching;
 
-		AgentAnimationModel model;
+		readonly AgentAnimationModel model;
+		internal bool UseExitBranching => model.UseExitBranching;
 
 		public AgentAnimation(AgentAnimator animator, string name, AgentAnimationModel model)
         {

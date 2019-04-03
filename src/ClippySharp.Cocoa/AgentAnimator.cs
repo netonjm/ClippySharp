@@ -166,15 +166,15 @@ namespace ClippySharp
             this.currentFrameIndex = newFrameIndex;
 
             // always switch frame data, unless we're at the last frame of an animation with a useExitBranching flag.
-            if (!(this.IsAtLastFrame() && animation.useExitBranching))
+            if (!(this.IsAtLastFrame() && animation.UseExitBranching))
             {
 				currentFrame = frame = animation.Frames[this.currentFrameIndex];
             }
 
-            NeedsRefresh?.Invoke(this, EventArgs.Empty);
-			agent.PlaySound (currentFrame?.Sound);
-
 			if (frame.Duration > 0) {
+				NeedsRefresh?.Invoke (this, EventArgs.Empty);
+				agent.PlaySound (currentFrame?.Sound);
+
 				aTimer.Interval = frame.Duration;
 				aTimer.Start ();
 			}
@@ -182,7 +182,7 @@ namespace ClippySharp
 			if (frameChanged && this.IsAtLastFrame())
             {
 				_started = false;
-				if (animation.useExitBranching && !this._exiting)
+				if (animation.UseExitBranching && !this._exiting)
                 {
                     AnimationEnded?.Invoke(this, new AnimationStateEventArgs ( currentAnimationName, AnimationStates.Waiting));
                 }
