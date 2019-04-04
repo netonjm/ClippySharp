@@ -12,9 +12,12 @@ Usage: Setup
 Add this code to you to your application to enable ClippySharp.
 
 ```csharp
-var agent = new Agent("clippy");
-var agentView = new AgentView(agent);
+var agentView = new AgentView();
 mainWindow.ContentView = agentView;
+
+var agent = new Agent("clippy");
+agentView.SetAgent (agent, initialAnimation: true)
+
 ```
 
 Usage: Actions
