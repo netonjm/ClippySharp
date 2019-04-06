@@ -3,12 +3,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{AB7FD7F4-7CDE-449E-B053-4BA2BC3C3C71}</ProjectGuid>
+    <ProjectGuid>{E2D7A65A-5903-4B38-A255-79493BE21F3B}</ProjectGuid>
     <ProjectTypeGuids>{A3F8F2AB-B479-4A4A-A458-A89E7DC349F1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <OutputType>Library</OutputType>
-    <RootNamespace>ClippySharp.Cocoa</RootNamespace>
-    <AssemblyName>ClippySharp.Cocoa</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>ClippyTest</RootNamespace>
+    <AssemblyName>ClippyTest</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <MonoMacResourcePrefix>Resources</MonoMacResourcePrefix>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -20,32 +20,28 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <EnableCodeSigning>false</EnableCodeSigning>
+    <CodeSigningKey>Mac Developer</CodeSigningKey>
     <CreatePackage>false</CreatePackage>
     <EnablePackageSigning>false</EnablePackageSigning>
     <IncludeMonoRuntime>false</IncludeMonoRuntime>
-    <UseSGen>false</UseSGen>
-    <HttpClientHandler></HttpClientHandler>
-    <LinkMode></LinkMode>
-    <XamMacArch></XamMacArch>
+    <UseSGen>true</UseSGen>
+    <UseRefCounting>true</UseRefCounting>
+    <Profiling>true</Profiling>
     <AOTMode>None</AOTMode>
-    <Profiling>false</Profiling>
-    <CodeSignResourceRules></CodeSignResourceRules>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
-    <DefineConstants></DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <EnableCodeSigning>false</EnableCodeSigning>
-    <CreatePackage>false</CreatePackage>
+    <CreatePackage>true</CreatePackage>
     <EnablePackageSigning>false</EnablePackageSigning>
-    <IncludeMonoRuntime>false</IncludeMonoRuntime>
-    <UseSGen>false</UseSGen>
-    <HttpClientHandler></HttpClientHandler>
-    <LinkMode></LinkMode>
-    <XamMacArch></XamMacArch>
+    <IncludeMonoRuntime>true</IncludeMonoRuntime>
+    <UseSGen>true</UseSGen>
+    <UseRefCounting>true</UseRefCounting>
+    <LinkMode>None</LinkMode>
     <AOTMode>None</AOTMode>
   </PropertyGroup>
   <ItemGroup>
@@ -53,27 +49,40 @@
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.Mac" />
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\netstandard2.0\Newtonsoft.Json.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SoundPlayer.cs" />
-    <Compile Include="AgentView.cs" />
-    <Compile Include="AgentContext.cs" />
-    <Compile Include="ViewWrappers\ImageViewWrapper.cs" />
-    <Compile Include="ViewWrappers\ImageWrapper.cs" />
-    <Compile Include="ViewWrappers\ScrollViewWrapper.cs" />
-    <Compile Include="ViewWrappers\ViewWrapper.cs" />
-    <Compile Include="AgentDelegate.cs" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-128.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-128%402x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-16.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-16%402x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-256.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-256%402x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-32.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-32%402x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-512.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon-512%402x.png" />
+    <ImageAsset Include="Assets.xcassets\Contents.json" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="ViewWrappers\" />
+    <Folder Include="Resources\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Info.plist" />
+    <None Include="Entitlements.plist" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Main.cs" />
+    <Compile Include="AppDelegate.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ClippySharp.Cocoa\ClippySharp.Cocoa.csproj">
+      <Project>{AB7FD7F4-7CDE-449E-B053-4BA2BC3C3C71}</Project>
+      <Name>ClippySharp.Cocoa</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ClippySharp.Core\ClippySharp.Core.csproj">
       <Project>{1E627C4D-FEDE-4851-9E93-7DC8ECC59E1F}</Project>
       <Name>ClippySharp.Core</Name>

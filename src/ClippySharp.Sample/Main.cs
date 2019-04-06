@@ -16,7 +16,9 @@ namespace ClippyTest
             NSApplication.Init();
             NSApplication.SharedApplication.ActivationPolicy = NSApplicationActivationPolicy.Regular;
 
-            var xPos = NSScreen.MainScreen.Frame.Width / 2;
+			AgentEnvirontment.Current.Initialize (new AgentDelegate (), new SoundPlayer ());
+
+			var xPos = NSScreen.MainScreen.Frame.Width / 2;
             var yPos = NSScreen.MainScreen.Frame.Height / 2;
 
             var mainWindow = new NSWindow(new CGRect(xPos, yPos, 200, 150), NSWindowStyle.Borderless, NSBackingStore.Buffered, false)
@@ -40,7 +42,7 @@ namespace ClippyTest
             agentPopupButton = new NSPopUpButton();
             stackView.AddArrangedSubview(agentPopupButton);
 
-			foreach (var item in AgentContext.Current.GetAgents ()) {
+			foreach (var item in AgentEnvirontment.Current.GetAgents ()) {
 				agentPopupButton.AddItem (item);
 			}
 

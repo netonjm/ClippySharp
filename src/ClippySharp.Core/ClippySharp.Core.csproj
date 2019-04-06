@@ -1,0 +1,167 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\" />
+    <Folder Include="Interfaces\" />
+    <Folder Include="Resources\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Resources\agents\bonzi\agent.json" />
+    <None Remove="Resources\agents\bonzi\map.png" />
+    <None Remove="Resources\agents\bonzi\sounds-mp3.json" />
+    <None Remove="Resources\agents\bonzi\sounds-ogg.json" />
+    <None Remove="Resources\agents\clippy\agent.json" />
+    <None Remove="Resources\agents\clippy\map.png" />
+    <None Remove="Resources\agents\clippy\sounds-mp3.json" />
+    <None Remove="Resources\agents\clippy\sounds-ogg.json" />
+    <None Remove="Resources\agents\f1\agent.json" />
+    <None Remove="Resources\agents\f1\map.png" />
+    <None Remove="Resources\agents\f1\sounds-mp3.json" />
+    <None Remove="Resources\agents\f1\sounds-ogg.json" />
+    <None Remove="Resources\agents\genius\agent.json" />
+    <None Remove="Resources\agents\genius\map.png" />
+    <None Remove="Resources\agents\genius\sounds-mp3.json" />
+    <None Remove="Resources\agents\genius\sounds-ogg.json" />
+    <None Remove="Resources\agents\links\agent.json" />
+    <None Remove="Resources\agents\links\map.png" />
+    <None Remove="Resources\agents\links\sounds-mp3.json" />
+    <None Remove="Resources\agents\links\sounds-ogg.json" />
+    <None Remove="Resources\agents\merlin\agent.json" />
+    <None Remove="Resources\agents\merlin\map.png" />
+    <None Remove="Resources\agents\merlin\sounds-mp3.json" />
+    <None Remove="Resources\agents\merlin\sounds-ogg.json" />
+    <None Remove="Resources\agents\peedy\agent.json" />
+    <None Remove="Resources\agents\peedy\map.png" />
+    <None Remove="Resources\agents\peedy\sounds-mp3.json" />
+    <None Remove="Resources\agents\peedy\sounds-ogg.json" />
+    <None Remove="Resources\agents\rocky\agent.json" />
+    <None Remove="Resources\agents\rocky\map.png" />
+    <None Remove="Resources\agents\rocky\sounds-mp3.json" />
+    <None Remove="Resources\agents\rocky\sounds-ogg.json" />
+    <None Remove="Resources\agents\rover\agent.json" />
+    <None Remove="Resources\agents\rover\map.png" />
+    <None Remove="Resources\agents\rover\sounds-mp3.json" />
+    <None Remove="Resources\agents\rover\sounds-ogg.json" />
+    <None Remove="Resources\border.png" />
+    <None Remove="Resources\tip.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\agents\bonzi\agent.json">
+      <LogicalName>ClippySharp.Core.Resources/agents/bonzi/agent.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\bonzi\map.png">
+      <LogicalName>ClippySharp.Core.Resources/agents/bonzi/map.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\bonzi\sounds-mp3.json">
+      <LogicalName>ClippySharp.Core.Resources/agents/bonzi/sounds-mp3.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\bonzi\sounds-ogg.json">
+      <LogicalName>ClippySharp.Core.Resources/agents/bonzi/sounds-ogg.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\clippy\agent.json">
+      <LogicalName>ClippySharp.Core.Resources/agents/clippy/agent.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\clippy\map.png">
+      <LogicalName>ClippySharp.Core.Resources/agents/clippy/map.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\clippy\sounds-mp3.json">
+      <LogicalName>ClippySharp.Core.Resources/agents/clippy/sounds-mp3.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\clippy\sounds-ogg.json">
+      <LogicalName>ClippySharp.Core.Resources/agents/clippy/sounds-ogg.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\f1\agent.json">
+      <LogicalName>ClippySharp.Core.Resources/agents/f1/agent.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\f1\map.png">
+      <LogicalName>ClippySharp.Core.Resources/agents/f1/map.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\f1\sounds-mp3.json">
+      <LogicalName>ClippySharp.Core.Resources/agents/f1/sounds-mp3.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\f1\sounds-ogg.json">
+      <LogicalName>ClippySharp.Core.Resources/agents/f1/sounds-ogg.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\genius\agent.json">
+      <LogicalName>ClippySharp.Core.Resources/agents/genius/agent.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\genius\map.png">
+      <LogicalName>ClippySharp.Core.Resources/agents/genius/map.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\genius\sounds-mp3.json">
+      <LogicalName>ClippySharp.Core.Resources/agents/genius/sounds-mp3.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\genius\sounds-ogg.json">
+      <LogicalName>ClippySharp.Core.Resources/agents/genius/sounds-ogg.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\links\agent.json">
+      <LogicalName>ClippySharp.Core.Resources/agents/links/agent.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\links\map.png">
+      <LogicalName>ClippySharp.Core.Resources/agents/links/map.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\links\sounds-mp3.json">
+      <LogicalName>ClippySharp.Core.Resources/agents/links/sounds-mp3.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\links\sounds-ogg.json">
+      <LogicalName>ClippySharp.Core.Resources/agents/links/sounds-ogg.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\merlin\agent.json">
+      <LogicalName>ClippySharp.Core.Resources/agents/merlin/agent.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\merlin\map.png">
+      <LogicalName>ClippySharp.Core.Resources/agents/merlin/map.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\merlin\sounds-mp3.json">
+      <LogicalName>ClippySharp.Core.Resources/agents/merlin/sounds-mp3.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\merlin\sounds-ogg.json">
+      <LogicalName>ClippySharp.Core.Resources/agents/merlin/sounds-ogg.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\peedy\agent.json">
+      <LogicalName>ClippySharp.Core.Resources/agents/peedy/agent.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\peedy\map.png">
+      <LogicalName>ClippySharp.Core.Resources/agents/peedy/map.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\peedy\sounds-mp3.json">
+      <LogicalName>ClippySharp.Core.Resources/agents/peedy/sounds-mp3.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\peedy\sounds-ogg.json">
+      <LogicalName>ClippySharp.Core.Resources/agents/peedy/sounds-ogg.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\rocky\agent.json">
+      <LogicalName>ClippySharp.Core.Resources/agents/rocky/agent.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\rocky\map.png">
+      <LogicalName>ClippySharp.Core.Resources/agents/rocky/map.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\rocky\sounds-mp3.json">
+      <LogicalName>ClippySharp.Core.Resources/agents/rocky/sounds-mp3.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\rocky\sounds-ogg.json">
+      <LogicalName>ClippySharp.Core.Resources/agents/rocky/sounds-ogg.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\rover\agent.json">
+      <LogicalName>ClippySharp.Core.Resources/agents/rover/agent.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\rover\map.png">
+      <LogicalName>ClippySharp.Core.Resources/agents/rover/map.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\rover\sounds-mp3.json">
+      <LogicalName>ClippySharp.Core.Resources/agents/rover/sounds-mp3.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\agents\rover\sounds-ogg.json">
+      <LogicalName>ClippySharp.Core.Resources/agents/rover/sounds-ogg.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\border.png" />
+    <EmbeddedResource Include="Resources\tip.png" />
+  </ItemGroup>
+</Project>

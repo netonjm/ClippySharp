@@ -29,16 +29,6 @@ namespace ClippySharp
 			}
 		}
 
-		//TODO: change this to use a directory thing
-		static readonly string[] agents = {
-			"bonzi", "clippy", "f1", "genius", "links", "merlin", "peedy", "rocky", "rover"
-		};
-
-		public string[] GetAgents ()
-		{
-			return agents;
-		}
-
 		static AgentContext current;
 		public static AgentContext Current {
 			get {

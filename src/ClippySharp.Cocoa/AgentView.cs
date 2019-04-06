@@ -80,7 +80,7 @@ namespace ClippySharp
         {
             InvokeOnMainThread(() =>
             {
-                Image = Agent.GetCurrentImage();
+                Image = Agent.GetCurrentImage()?.NativeObject as NSImage;
             });
         }
 
