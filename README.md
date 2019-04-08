@@ -1,10 +1,10 @@
 # ClippySharp
 
-Add Clippy to any Xamarin.Mac (in the future it will support other UI toolkits) application for instant nostalgia.
+Add Clippy to any Xamarin.Mac/Xamarin.iOS (in the future it will support other UI toolkits) application for instant nostalgia.
 
-| Xam.Mac | VS4Mac
-|---|---|
-|  <img src="https://raw.githubusercontent.com/netonjm/ClippySharp/master/images/clippysharp.gif" width="300"> | <img src="https://raw.githubusercontent.com/netonjm/ClippySharp/master/images/clippy-monodevelop.gif" width="300"> |
+| Xam.Mac | Xam.iOS | VS4Mac
+|---|---|---|
+|  <img src="https://raw.githubusercontent.com/netonjm/ClippySharp/master/images/clippysharp.gif" width="300"> | <img src="https://raw.githubusercontent.com/netonjm/ClippySharp/master/images/clippy-ios.gif" width="300"> | <img src="https://raw.githubusercontent.com/netonjm/ClippySharp/master/images/clippy-monodevelop.gif" width="300"> |
 
 
 Usage: Setup
