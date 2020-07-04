@@ -41,6 +41,18 @@ namespace ClippySharp
 		public Point Position = new Point ();
 		public Size Size = new Size ();
 
+		public Rectangle()
+		{
+		}
+
+		public Rectangle(float x, float y, float width, float height)
+		{
+			Position.X = x;
+			Position.Y = y;
+			Size.Width = width;
+			Size.Height = height;
+		}
+
 		public float X {
 			get => Position.X;
 			set => Position.X = value;
