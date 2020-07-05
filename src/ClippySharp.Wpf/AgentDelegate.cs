@@ -25,6 +25,7 @@ namespace ClippySharp
 								 cropRect,
 								 GraphicsUnit.Pixel);
 			}
+			target.MakeTransparent();
 			return target;
 		}
 
@@ -82,7 +83,9 @@ namespace ClippySharp
 				BitmapEncoder enc = new BmpBitmapEncoder();
 				enc.Frames.Add(BitmapFrame.Create(bitmapImage));
 				enc.Save(outStream);
-				return new Bitmap(new System.Drawing.Bitmap(outStream));
+				var bitmap = new Bitmap(new System.Drawing.Bitmap(outStream));
+				bitmap.MakeTransparent();
+				return bitmap;
 			}
 		}
 

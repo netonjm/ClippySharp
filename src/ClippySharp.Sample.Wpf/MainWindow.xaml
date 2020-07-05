@@ -5,8 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ClippySharp.Sample.Wpf"
         xmlns:ClippySharp="clr-namespace:ClippySharp;assembly=ClippySharp.Wpf" x:Class="ClippySharp.Sample.Wpf.MainWindow"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="683.892" ResizeMode="NoResize">
+        mc:Ignorable="d" AllowsTransparency="True"
+        Title="MainWindow" Height="450" Width="683.892" WindowStyle="None" ResizeMode="NoResize">
+    <Window.Background>
+        <SolidColorBrush Opacity="0" Color="White"></SolidColorBrush>
+    </Window.Background>
     <Grid>
 
         <ComboBox x:Name="animationPopupButton" Margin="29,105,0,0" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" Width="120"/>
